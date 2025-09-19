@@ -1,22 +1,29 @@
 ---
 title: "P8105_HW1_rs4788"
+author: "Ruhui Shen"
 output: html_document
 date: "2025-09-19"
 ---
 
 
-## Problem 1
+```{r setup}
+library("moderndive")
+library(tidyverse)
+
+```
+
+# Problem 1
 
 ```{r}
-library("moderndive")
 data("early_january_weather")
 ```
 
 
-#Description of the dataset:
+## Description of the dataset:
 
 The dataset contains meteorological data for the first half of January 2013. 
-Key variables in this dataset include: Time indicators: `r paste(names(early_january_weather)[2:5], collapse = ",")`,time_hour; Meteorological measurements: `r paste(names(early_january_weather)[6:14], collapse = ",")`.
+Key variables in this dataset include: Time indicators: `r paste(names(early_january_weather)[2:5], collapse = ", ")`,time_hour; 
+Meteorological measurements: `r paste(names(early_january_weather)[6:14], collapse = ", ")`.
 The mean temperature recorded in this period was `r round(mean(early_january_weather$temp))`°F, 
 with humidity averaging `r round(mean(early_january_weather$humid))`%.
 
@@ -27,7 +34,7 @@ The mean temperature is `r mean(early_january_weather$temp)`℉.
 
 
 
-#Make a scatterplot:
+## Make a scatterplot:
 
 ```{r}
 library(ggplot2)
@@ -44,3 +51,47 @@ ggsave("temperature_vs_time_scatterplot.png", plot = scatter_plot,
 
 ```
 The scatter plot indicates that temperatures showed an overall upward trend in January. Daily fluctuations within the scatter plot reflect temperature variations caused by day-night cycles. Humidity changes are somewhat correlated with temperature, with higher temperatures generally leading to lower humidity levels.
+
+
+
+# Problem 2
+
+## Create a data frame:
+
+```{r}
+sample <- rnorm(10)
+df <- data.frame(
+  normal_sample = sample,
+  logical_vector = sample > 0, 
+  character_vector = c("S","A","M","A","N","T","H","A","H","W"), 
+  factor_vector = factor(rep(c("Low", "Medium", "High"), length.out = 10)) )
+
+str(df)
+```
+
+
+## Take the mean of each variable:
+
+```{r warning=FALSE}
+mean(pull(df, normal_sample))
+mean(pull(df, logical_vector))
+mean(pull(df, character_vector))
+mean(pull(df, factor_vector))
+```
+Works: Numeric variables and logical variables.
+Doesn't Work: Character variables and factor variables.
+
+
+## Convert variables:
+
+```{r eval=FALSE}
+logical_numeric <- as.numeric(df$logical_vector)  
+character_numeric <- as.numeric(df$character_vector) 
+factor_numeric <- as.numeric(df$factor_vector) 
+```
+
+For logical variables, `as.numeric` converts TRUE and FALSE to 1 and 0, yielding a numeric vector that enables mean calculation.
+
+For character variables, `as.numeric` attempts to convert characters to numeric values. However, since characters are not numeric, all elements become NA, explaining why calculating the mean of a character vector fails.
+
+For factor variables, `as.numeric` returns the underlying integer encoding of the factors (e.g., “Low”=1, ‘Medium’=2, “High”=3). After conversion, a numeric vector is obtained that allows mean calculation, but the mean cannot be computed directly before conversion.

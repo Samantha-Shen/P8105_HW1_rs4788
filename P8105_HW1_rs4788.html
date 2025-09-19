@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Ruhui Shen" />
 
 <meta name="date" content="2025-09-19" />
 
@@ -350,25 +351,40 @@ display: none;
 
 
 <h1 class="title toc-ignore">P8105_HW1_rs4788</h1>
+<h4 class="author">Ruhui Shen</h4>
 <h4 class="date">2025-09-19</h4>
 
 </div>
 
 
-<div id="problem-1" class="section level2">
-<h2>Problem 1</h2>
 <pre class="r"><code>library(&quot;moderndive&quot;)
-data(&quot;early_january_weather&quot;)</code></pre>
-<p>#Description of the dataset:</p>
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+## ✔ purrr     1.1.0     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<div id="problem-1" class="section level1">
+<h1>Problem 1</h1>
+<pre class="r"><code>data(&quot;early_january_weather&quot;)</code></pre>
+<div id="description-of-the-dataset" class="section level2">
+<h2>Description of the dataset:</h2>
 <p>The dataset contains meteorological data for the first half of
 January 2013. Key variables in this dataset include: Time indicators:
-year,month,day,hour,time_hour; Meteorological measurements:
-temp,dewp,humid,wind_dir,wind_speed,wind_gust,precip,pressure,visib. The
-mean temperature recorded in this period was 40°F, with humidity
+year, month, day, hour,time_hour; Meteorological measurements: temp,
+dewp, humid, wind_dir, wind_speed, wind_gust, precip, pressure, visib.
+The mean temperature recorded in this period was 40°F, with humidity
 averaging 65%.</p>
 <p>The size of the dataset is 358 rows and 15 columns.</p>
 <p>The mean temperature is 39.5821229℉.</p>
-<p>#Make a scatterplot:</p>
+</div>
+<div id="make-a-scatterplot" class="section level2">
+<h2>Make a scatterplot:</h2>
 <pre class="r"><code>library(ggplot2)
 scatter_plot &lt;- ggplot(early_january_weather, 
                        aes(x = time_hour, y = temp, color = humid))+ 
@@ -384,6 +400,57 @@ trend in January. Daily fluctuations within the scatter plot reflect
 temperature variations caused by day-night cycles. Humidity changes are
 somewhat correlated with temperature, with higher temperatures generally
 leading to lower humidity levels.</p>
+</div>
+</div>
+<div id="problem-2" class="section level1">
+<h1>Problem 2</h1>
+<div id="create-a-data-frame" class="section level2">
+<h2>Create a data frame:</h2>
+<pre class="r"><code>sample &lt;- rnorm(10)
+df &lt;- data.frame(
+  normal_sample = sample,
+  logical_vector = sample &gt; 0, 
+  character_vector = c(&quot;S&quot;,&quot;A&quot;,&quot;M&quot;,&quot;A&quot;,&quot;N&quot;,&quot;T&quot;,&quot;H&quot;,&quot;A&quot;,&quot;H&quot;,&quot;W&quot;), 
+  factor_vector = factor(rep(c(&quot;Low&quot;, &quot;Medium&quot;, &quot;High&quot;), length.out = 10)) )
+
+str(df)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    10 obs. of  4 variables:
+##  $ normal_sample   : num  -1.4758 -0.2797 -0.1232 0.376 -0.0595 ...
+##  $ logical_vector  : logi  FALSE FALSE FALSE TRUE FALSE FALSE ...
+##  $ character_vector: chr  &quot;S&quot; &quot;A&quot; &quot;M&quot; &quot;A&quot; ...
+##  $ factor_vector   : Factor w/ 3 levels &quot;High&quot;,&quot;Low&quot;,&quot;Medium&quot;: 2 3 1 2 3 1 2 3 1 2</code></pre>
+</div>
+<div id="take-the-mean-of-each-variable" class="section level2">
+<h2>Take the mean of each variable:</h2>
+<pre class="r"><code>mean(pull(df, normal_sample))</code></pre>
+<pre><code>## [1] -0.1601801</code></pre>
+<pre class="r"><code>mean(pull(df, logical_vector))</code></pre>
+<pre><code>## [1] 0.4</code></pre>
+<pre class="r"><code>mean(pull(df, character_vector))</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>mean(pull(df, factor_vector))</code></pre>
+<pre><code>## [1] NA</code></pre>
+<p>Works: Numeric variables and logical variables. Doesn’t Work:
+Character variables and factor variables.</p>
+</div>
+<div id="convert-variables" class="section level2">
+<h2>Convert variables:</h2>
+<pre class="r"><code>logical_numeric &lt;- as.numeric(df$logical_vector)  
+character_numeric &lt;- as.numeric(df$character_vector) 
+factor_numeric &lt;- as.numeric(df$factor_vector) </code></pre>
+<p>For logical variables, <code>as.numeric</code> converts TRUE and
+FALSE to 1 and 0, yielding a numeric vector that enables mean
+calculation.</p>
+<p>For character variables, <code>as.numeric</code> attempts to convert
+characters to numeric values. However, since characters are not numeric,
+all elements become NA, explaining why calculating the mean of a
+character vector fails.</p>
+<p>For factor variables, <code>as.numeric</code> returns the underlying
+integer encoding of the factors (e.g., “Low”=1, ‘Medium’=2, “High”=3).
+After conversion, a numeric vector is obtained that allows mean
+calculation, but the mean cannot be computed directly before
+conversion.</p>
+</div>
 </div>
 
 
