@@ -4,26 +4,43 @@ output: html_document
 date: "2025-09-19"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+## Problem 1
+
+```{r}
+library("moderndive")
+data("early_january_weather")
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+#Description of the dataset:
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+The dataset contains meteorological data for the first half of January 2013. 
+Key variables in this dataset include: Time indicators: `r paste(names(early_january_weather)[2:5], collapse = ",")`,time_hour; Meteorological measurements: `r paste(names(early_january_weather)[6:14], collapse = ",")`.
+The mean temperature recorded in this period was `r round(mean(early_january_weather$temp))`°F, 
+with humidity averaging `r round(mean(early_january_weather$humid))`%.
 
-```{r cars}
-summary(cars)
+The size of the dataset is `r nrow(early_january_weather)` rows 
+  and `r ncol(early_january_weather)` columns.
+  
+The mean temperature is `r mean(early_january_weather$temp)`℉.
+
+
+
+#Make a scatterplot:
+
+```{r}
+library(ggplot2)
+scatter_plot <- ggplot(early_january_weather, 
+                       aes(x = time_hour, y = temp, color = humid))+ 
+            geom_point()+
+              labs(title = "Temperature Variation over Time by Humidity Level",
+               x = "Time Hour", y = "Temperature (F)",color = "Humidity") 
+print(scatter_plot)
+
+
+ggsave("temperature_vs_time_scatterplot.png", plot = scatter_plot, 
+       width = 10, height = 6)
+
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The scatter plot indicates that temperatures showed an overall upward trend in January. Daily fluctuations within the scatter plot reflect temperature variations caused by day-night cycles. Humidity changes are somewhat correlated with temperature, with higher temperatures generally leading to lower humidity levels.
